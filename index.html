@@ -487,17 +487,17 @@
       grid-column: span 4;
     }
 
-    /* FIXED GRID DEMO: locks height so animation does not shift the page */
+    /* RESPONSIVE GRID DEMO: full desktop experience, compact mobile experience */
     .grid-demo {
       margin-top: 1.3rem;
-      height: 250px;
+      height: 285px;
       overflow: hidden;
     }
 
     .grid-demo-stage {
       display: grid;
       gap: 8px;
-      height: 205px;
+      height: 240px;
       overflow: hidden;
       align-content: start;
       transition:
@@ -525,20 +525,16 @@
       display: flex;
       flex-direction: column;
       gap: 7px;
-      transition:
-        transform 600ms cubic-bezier(.4,0,.2,1),
-        opacity 300ms ease,
-        border-radius 300ms ease,
-        min-height 600ms cubic-bezier(.4,0,.2,1),
-        max-height 600ms cubic-bezier(.4,0,.2,1);
       min-height: 72px;
-      max-height: 72px;
       overflow: hidden;
+      transition:
+        min-height 600ms cubic-bezier(.4,0,.2,1),
+        padding 600ms cubic-bezier(.4,0,.2,1),
+        border-radius 600ms cubic-bezier(.4,0,.2,1);
     }
 
     .grid-demo-stage.cols-2 .grid-demo-card {
       min-height: 80px;
-      max-height: 80px;
     }
 
     .grid-demo-stage.cols-1 .grid-demo-card {
@@ -546,7 +542,6 @@
       align-items: center;
       gap: 12px;
       min-height: 52px;
-      max-height: 52px;
     }
 
     .gdc-bar {
@@ -1071,35 +1066,72 @@
       }
 
       .grid-demo {
-        height: 240px;
+        height: 265px;
+        overflow: hidden;
       }
 
       .grid-demo-stage {
-        height: 195px;
+        height: 220px;
+        overflow: hidden;
+        gap: 8px;
       }
 
-      .grid-demo-stage.cols-4,
-      .grid-demo-stage.cols-2,
+      .grid-demo-stage.cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .grid-demo-stage.cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .grid-demo-stage.cols-1 {
         grid-template-columns: 1fr;
       }
 
-      .grid-demo-card,
-      .grid-demo-stage.cols-2 .grid-demo-card,
+      .grid-demo-stage.cols-4 .grid-demo-card {
+        min-height: 110px;
+        max-height: 110px;
+        padding: 6px;
+        flex-direction: column;
+      }
+
+      .grid-demo-stage.cols-2 .grid-demo-card {
+        min-height: 86px;
+        max-height: 86px;
+        padding: 8px;
+        flex-direction: column;
+      }
+
       .grid-demo-stage.cols-1 .grid-demo-card {
-        min-height: 42px;
-        max-height: 42px;
+        min-height: 44px;
+        max-height: 44px;
+        padding: 8px;
         flex-direction: row;
         align-items: center;
         gap: 12px;
       }
 
-      .gdc-bar.short,
+      .grid-demo-stage.cols-4 .gdc-bar.short,
+      .grid-demo-stage.cols-2 .gdc-bar.short {
+        display: block;
+      }
+
       .grid-demo-stage.cols-1 .gdc-bar.short {
         display: none;
       }
 
-      .gdc-dot,
+      .grid-demo-stage.cols-4 .gdc-dot {
+        width: 16px;
+        height: 16px;
+        margin-top: auto;
+      }
+
+      .grid-demo-stage.cols-2 .gdc-dot {
+        width: 22px;
+        height: 22px;
+        margin-top: auto;
+      }
+
       .grid-demo-stage.cols-1 .gdc-dot {
         width: 20px;
         height: 20px;
@@ -1377,11 +1409,16 @@
       ];
 
       let i = 0;
-      stage.classList.add('cols-4');
+
+      function applyGridState(state) {
+        stage.className = 'grid-demo-stage ' + state.cls;
+      }
+
+      applyGridState(states[0]);
 
       setInterval(() => {
         i = (i + 1) % states.length;
-        stage.className = 'grid-demo-stage ' + states[i].cls;
+        applyGridState(states[i]);
         label.style.opacity = '0';
 
         setTimeout(() => {
