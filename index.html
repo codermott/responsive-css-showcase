@@ -86,15 +86,20 @@
     .lab-wide{grid-column:span 7}
     .lab-mid{grid-column:span 5}
     .lab-small{grid-column:span 4}
-    .resize-demo{margin-top:1.3rem;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0.65rem;transition:grid-template-columns 650ms cubic-bezier(.2,.8,.2,1),gap 650ms ease}
-    .resize-demo.two-column{grid-template-columns:repeat(2,minmax(0,1fr));gap:0.8rem}
-    .resize-demo.one-column{grid-template-columns:1fr;gap:0.9rem}
-    .resize-demo span{min-height:66px;border-radius:16px;background:linear-gradient(135deg,rgba(56,189,248,0.32),rgba(167,139,250,0.25));border:1px solid rgba(255,255,255,0.12);transition:transform 650ms cubic-bezier(.2,.8,.2,1),min-height 650ms ease;animation:tileGlow 3.2s ease-in-out infinite}
-    .resize-demo.two-column span{min-height:74px;transform:scale(1.02)}
-    .resize-demo.one-column span{min-height:48px}
-    .resize-demo span:nth-child(2){animation-delay:180ms}
-    .resize-demo span:nth-child(3){animation-delay:360ms}
-    .resize-demo span:nth-child(4){animation-delay:540ms}
+    .grid-demo{margin-top:1.3rem}
+    .grid-demo-stage{display:grid;gap:8px;transition:grid-template-columns 600ms cubic-bezier(.4,0,.2,1),gap 400ms ease}
+    .grid-demo-stage.cols-4{grid-template-columns:repeat(4,1fr)}
+    .grid-demo-stage.cols-2{grid-template-columns:repeat(2,1fr)}
+    .grid-demo-stage.cols-1{grid-template-columns:1fr}
+    .grid-demo-card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;transition:all 600ms cubic-bezier(.4,0,.2,1);min-height:72px}
+    .grid-demo-stage.cols-2 .grid-demo-card{min-height:80px}
+    .grid-demo-stage.cols-1 .grid-demo-card{flex-direction:row;align-items:center;gap:12px;min-height:52px}
+    .gdc-bar{display:block;height:8px;border-radius:999px;background:rgba(255,255,255,0.25);flex:1}
+    .gdc-bar.short{width:60%;flex:none}
+    .grid-demo-stage.cols-1 .gdc-bar.short{display:none}
+    .gdc-dot{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,rgba(56,189,248,0.6),rgba(167,139,250,0.5));flex-shrink:0;margin-top:auto;transition:all 600ms ease}
+    .grid-demo-stage.cols-1 .gdc-dot{width:22px;height:22px;margin-top:0}
+    .grid-demo-label{margin-top:10px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);transition:opacity 300ms}
     .morph-box{width:148px;height:148px;margin:2rem auto 0;background:linear-gradient(135deg,var(--blue),var(--purple));animation:morph 7s ease-in-out infinite;box-shadow:0 18px 60px rgba(56,189,248,0.22)}
     .stagger-list{display:grid;gap:0.7rem;margin-top:1.4rem}
     .stagger-list span{display:block;min-height:44px;border-radius:14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);animation:slidePulse 3.8s ease-in-out infinite}
@@ -295,8 +300,16 @@
         <div class="skill-lab">
           <article class="lab-card lab-wide">
             <h3>Responsive grid animation</h3>
-            <p>The layout shifts between four, two, and one column to show how content can respond to available space.</p>
-            <div class="resize-demo" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+            <p>Watch the layout restructure as the viewport shrinks — four columns collapse to two, then stack to one.</p>
+            <div class="grid-demo" aria-hidden="true">
+              <div class="grid-demo-stage" id="gridStage">
+                <div class="grid-demo-card"><span class="gdc-bar"></span><span class="gdc-bar short"></span><span class="gdc-dot"></span></div>
+                <div class="grid-demo-card"><span class="gdc-bar"></span><span class="gdc-bar short"></span><span class="gdc-dot"></span></div>
+                <div class="grid-demo-card"><span class="gdc-bar"></span><span class="gdc-bar short"></span><span class="gdc-dot"></span></div>
+                <div class="grid-demo-card"><span class="gdc-bar"></span><span class="gdc-bar short"></span><span class="gdc-dot"></span></div>
+              </div>
+              <div class="grid-demo-label" id="gridLabel">4 columns — Desktop</div>
+            </div>
           </article>
           <article class="lab-card lab-mid">
             <h3>Morphing shape</h3>
@@ -402,14 +415,27 @@
         menuButton.textContent = 'Menu';
       }
     });
-    const resizeDemo = document.querySelector('.resize-demo');
-    const gridStates = ['', 'two-column', 'one-column'];
-    let gridIndex = 0;
-    setInterval(() => {
-      resizeDemo.classList.remove('two-column', 'one-column');
-      gridIndex = (gridIndex + 1) % gridStates.length;
-      if (gridStates[gridIndex]) resizeDemo.classList.add(gridStates[gridIndex]);
-    }, 1800);
+    // grid demo
+    const stage = document.getElementById('gridStage');
+    const label = document.getElementById('gridLabel');
+    if (stage) {
+      const states = [
+        { cls: 'cols-4', text: '4 columns — Desktop' },
+        { cls: 'cols-2', text: '2 columns — Tablet' },
+        { cls: 'cols-1', text: '1 column — Mobile' },
+      ];
+      let i = 0;
+      stage.classList.add('cols-4');
+      setInterval(() => {
+        i = (i + 1) % states.length;
+        stage.className = 'grid-demo-stage ' + states[i].cls;
+        label.style.opacity = '0';
+        setTimeout(() => {
+          label.textContent = states[i].text;
+          label.style.opacity = '1';
+        }, 300);
+      }, 2200);
+    }
   </script>
 </body>
 </html>
